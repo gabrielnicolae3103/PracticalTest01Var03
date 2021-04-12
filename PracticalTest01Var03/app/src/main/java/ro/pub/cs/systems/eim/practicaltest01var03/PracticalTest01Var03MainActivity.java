@@ -17,6 +17,8 @@ public class PracticalTest01Var03MainActivity extends AppCompatActivity {
     Button plusButton;
     Button minusButton;
     TextView result;
+    char operation = ' ';
+    Button navigateButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,9 +30,11 @@ public class PracticalTest01Var03MainActivity extends AppCompatActivity {
         this.plusButton = findViewById(R.id.plusButton);
         this.minusButton = findViewById(R.id.minusButton);
         this.result = findViewById(R.id.result);
+        this.navigateButton = findViewById(R.id.navigate);
 
         this.plusButton.setOnClickListener(new ViewListener());
         this.minusButton.setOnClickListener(new ViewListener());
+        this.navigateButton.setOnClickListener(new ViewListener());
     }
 
 
@@ -49,6 +53,7 @@ public class PracticalTest01Var03MainActivity extends AppCompatActivity {
                     int resultN = Integer.parseInt(n1) + Integer.parseInt(n2);
                     String resultText = n1 + " + " + n2 + " = " + String.valueOf(resultN);
                     result.setText(resultText);
+                    operation = '+';
                     break;
                 }
                 case R.id.minusButton: {
@@ -61,6 +66,13 @@ public class PracticalTest01Var03MainActivity extends AppCompatActivity {
                     int resultN = Integer.parseInt(n1) - Integer.parseInt(n2);
                     String resultText = n1 + " - " + n2 + " = " + String.valueOf(resultN);
                     result.setText(resultText);
+                    operation = '-';
+                    break;
+                }
+                case R.id.navigate: {
+                    Intent intent = new Intent(getApplicationContext(), PracticalTest01Var03SecondaryActivity.class);
+                    intent.putExtra(Constants.OPERATION, result.getText().toString());
+                    startActivityForResult(intent, Constants.SECONDARY_ACTIVITY_REQUEST_CODE);
                     break;
                 }
                 default: {
@@ -113,5 +125,13 @@ public class PracticalTest01Var03MainActivity extends AppCompatActivity {
             result.setText(s3);
         }
         Toast.makeText(getApplicationContext(), "Numerele sunt " + s1 + " " + s2, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if (requestCode == Constants.SECONDARY_ACTIVITY_REQUEST_CODE) {
+            Toast.makeText(this, "The activity returned with result " + resultCode, Toast.LENGTH_LONG).show();
+        }
     }
 }
