@@ -10,7 +10,8 @@
     <EditText
         android:id="@+id/number1EditText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"></EditText>
+        android:layout_height="wrap_content"
+        android:saveEnabled="false"></EditText>
 
     <GridLayout
         android:layout_width="wrap_content"
@@ -38,9 +39,12 @@
     <EditText
         android:id="@+id/number2EditText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"></EditText>
+        android:layout_height="wrap_content"
+        android:saveEnabled="false"></EditText>
 
     <TextView
+        android:id="@+id/result"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"></TextView>
+        android:layout_height="wrap_content"
+        android:saveEnabled="false"></TextView>
 </LinearLayout>
