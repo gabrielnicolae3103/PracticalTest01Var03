@@ -2,8 +2,12 @@ package ro.pub.cs.systems.eim.practicaltest01var03;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,6 +24,9 @@ public class PracticalTest01Var03MainActivity extends AppCompatActivity {
     char operation = ' ';
     Button navigateButton;
 
+    private int serviceStatus = Constants.SERVICE_STOPPED;
+    private IntentFilter intentFilter = new IntentFilter();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +42,10 @@ public class PracticalTest01Var03MainActivity extends AppCompatActivity {
         this.plusButton.setOnClickListener(new ViewListener());
         this.minusButton.setOnClickListener(new ViewListener());
         this.navigateButton.setOnClickListener(new ViewListener());
+
+        for (int index = 0; index < Constants.actionTypes.length; index++) {
+            intentFilter.addAction(Constants.actionTypes[index]);
+        }
     }
 
 
@@ -54,6 +65,7 @@ public class PracticalTest01Var03MainActivity extends AppCompatActivity {
                     String resultText = n1 + " + " + n2 + " = " + String.valueOf(resultN);
                     result.setText(resultText);
                     operation = '+';
+                    startThread();
                     break;
                 }
                 case R.id.minusButton: {
@@ -67,6 +79,7 @@ public class PracticalTest01Var03MainActivity extends AppCompatActivity {
                     String resultText = n1 + " - " + n2 + " = " + String.valueOf(resultN);
                     result.setText(resultText);
                     operation = '-';
+                    startThread();
                     break;
                 }
                 case R.id.navigate: {
@@ -133,5 +146,42 @@ public class PracticalTest01Var03MainActivity extends AppCompatActivity {
         if (requestCode == Constants.SECONDARY_ACTIVITY_REQUEST_CODE) {
             Toast.makeText(this, "The activity returned with result " + resultCode, Toast.LENGTH_LONG).show();
         }
+    }
+
+    public void startThread() {
+        if (serviceStatus == Constants.SERVICE_STOPPED) {
+            Intent intent = new Intent(getApplicationContext(), PracticalTest01Var03Service.class);
+            intent.putExtra(Constants.NUMBER_1, number1.getText().toString());
+            intent.putExtra(Constants.NUMBER_2, number2.getText().toString());
+            getApplicationContext().startService(intent);
+            serviceStatus = Constants.SERVICE_STARTED;
+        }
+    }
+
+    private MessageBroadcastReceiver messageBroadcastReceiver = new MessageBroadcastReceiver();
+    private class MessageBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(Constants.BROADCAST_RECEIVER_TAG, intent.getStringExtra(Constants.BROADCAST_RECEIVER_EXTRA));
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(messageBroadcastReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onPause() {
+        unregisterReceiver(messageBroadcastReceiver);
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Intent intent = new Intent(this, PracticalTest01Var03Service.class);
+        stopService(intent);
+        super.onDestroy();
     }
 }
